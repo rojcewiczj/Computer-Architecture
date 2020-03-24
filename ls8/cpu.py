@@ -6,9 +6,23 @@ class CPU:
     """Main CPU class."""
 
     def __init__(self):
-        """Construct a new CPU."""
-        pass
+        self.ram = [0] * 256
+        self.reg = [0] * 8
+        self.pc = 0
+        self.HLT = exit()
 
+    def ram_read(self, address):
+        return self.ram[address]
+    
+    def ram_write(self, address, value):
+        self.ram[address] = value
+    def binary_convert(self, binary):
+        string=str(binary)
+        binary_string=string[2:9]
+        decimal_rep= int(binary_string, 2)
+        hexadecimal_string = hex(decimal_rep)
+
+   
     def load(self):
         """Load a program into memory."""
 
@@ -62,4 +76,25 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        running = True
+        IR = self.ram_read(self.pc)
+        operand_a = self.ram_read(self.pc + 1)
+        operand_b = self.ram_read(self.pc + 2)
+        print(IR)
+        while running:
+            if IR ==  0b10000010:
+                self.reg[0] = 8
+                self.pc += 1
+            elif IR == 0b01000111:
+                print(self.reg[0])
+                self.pc += 1
+            elif IR ==  0b00000001:
+                self.HLT
+            else:
+                self.pc +=1
+
+
+
+
+                 
+        
