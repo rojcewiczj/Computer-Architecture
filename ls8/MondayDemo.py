@@ -26,7 +26,7 @@ running = True
 while running:
     command = memory[pc]
     if command == PRINT_BEEJ:
-        print("Beej!")
+        print("h!")
         pc += 1
     elif command == HALT:
         running = False
@@ -50,5 +50,9 @@ while running:
         register[reg_a] += register[reg_b]
         pc += 3
     else:
-        print(f"Unknown instruction: {command}")
+        print("hello")
         sys.exit(1)
+
+
+
+   
