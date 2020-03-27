@@ -9,6 +9,34 @@ class CPU:
         self.reg = [None] * 8
         self.pc = 0
         self.SP = 7
+        self.Flags = {
+            'E': 0,
+            'L': 0,
+            'G':0
+            
+        }
+        self.functions = {
+            # 164: self.MOD,
+            # 172: self.SHL,
+            # 173: self.SHR,
+            # 171: self.XOR,
+            # 105: self.NOT,
+            # 170: self.OR,
+            # 168: self.AND,
+            84: self.JMP,
+            86: self.JNE,
+            85: self.JEQ,
+            167: self.CMP,
+            130 : self.LDI,
+            71 : self.PRN,
+            162: self.MUL,
+            69: self.PUSH,
+            70: self.POP,
+            80: self.CALL,
+            17: self.RET,
+            160: self.ADD,
+            1: self.HLT
+        }
     def HLT(self):
         exit()
   
@@ -78,13 +106,45 @@ class CPU:
     def RET(self):
         self.pc = self.ram[self.SP] + 1
         self.SP +=1
+
+    def CMP(self):
+        regOne = self.pc + 1
+        regTwo = self.pc + 2
        
+        if self.reg[self.binary_convert_dec(self.ram_read(regOne))] == self.reg[self.binary_convert_dec(self.ram_read(regTwo))]:
+            self.Flags['E'] = 1
+        else:
+            self.Flags['E'] = 0
+
+        if self.reg[self.binary_convert_dec(self.ram_read(regOne))] < self.reg[self.binary_convert_dec(self.ram_read(regTwo))]:
+            self.Flags['L'] = 1
+        else:
+            self.Flags['L'] = 0
+    
+        if self.reg[self.binary_convert_dec(self.ram_read(regOne))] > self.reg[self.binary_convert_dec(self.ram_read(regTwo))]:
+            self.Flags['G'] = 1
+        else:
+            self.Flags['G'] = 0
+        self.pc += 3
+
+    def JEQ(self):
+        regOne = self.pc + 1
+        if self.Flags['E'] == 1:
+            self.pc = self.reg[self.binary_convert_dec(self.ram_read(regOne))] 
+        else:
+            self.pc += 2
+       
+    def JNE(self):
         
-
-
-    # def JUMP():
-
-
+        regOne = self.pc + 1
+        if self.Flags['E'] == 0:
+            self.pc = self.reg[self.binary_convert_dec(self.ram_read(regOne))]
+        else:
+            self.pc += 2
+    def JMP(self):
+        regOne = self.pc + 1
+        self.pc = self.reg[self.binary_convert_dec(self.ram_read(regOne))]
+    
 
     def load(self, filename):
         """Load a program into memory."""
@@ -138,29 +198,9 @@ class CPU:
     def run(self):
         """Run the CPU."""
         running = True
-        IR = self.ram_read(self.pc)
-        operand_a = self.ram_read(self.pc + 1)
-        operand_b = self.ram_read(self.pc + 2)
         while running == True:
-            if self.binary_convert_hex(self.ram_read(self.pc)) == "82":
-               self.LDI()
-            if self.binary_convert_hex(self.ram_read(self.pc)) == "47":
-                self.PRN()
-            if self.binary_convert_dec(self.ram_read(self.pc)) == 162:
-                self.MUL()
-            if self.binary_convert_dec(self.ram_read(self.pc)) == 69:
-                self.PUSH()
-            if self.binary_convert_dec(self.ram_read(self.pc)) == 70:
-                self.POP()
-            if  self.binary_convert_dec(self.ram_read(self.pc)) == 80:
-                self.CALL()
-            if self.binary_convert_dec(self.ram_read(self.pc)) == 17:
-                self.RET()
-            if self.binary_convert_dec(self.ram_read(self.pc)) == 160:
-                self.ADD()
-            if self.binary_convert_dec(self.ram_read(self.pc)) == 1:
-                self.HLT()
-
+            self.functions[self.binary_convert_dec(self.ram_read(self.pc))]()
+    
 
 
 
